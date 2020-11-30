@@ -29,7 +29,7 @@ class EventController{
     public function getAllEvents(WP_REST_Request $request){
         $Events = [];
         $result = Event::all(); //this is fetching a Event with that id
-        // print_r($result);
+        print_r($result);
         foreach ($result->posts as $Event) {
             
             $Events[] = array(

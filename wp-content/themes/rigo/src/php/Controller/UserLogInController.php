@@ -8,15 +8,26 @@ use \WP_REST_Request;
 class UserLogInController{
     
     
-    
+    //This function requests a single user
     public function getSingleUser(WP_REST_Request $request){
         $id = (string) $request['id'];
-        return UserLogIn::get($id);
+        $user = UserLogIn::get($id);
+        $user = array(
+                "ID" => $user->ID,
+                // "title" => $user->title,
+                "name" => $user->name,
+                "last_name" => $user->last_name,
+                "email" => $user->email,
+                "password" => $user->password,
+                
+            );
+        return $user;
     }
     
+    //This function requests all users with all the default fields
     public function getAllUsers(WP_REST_Request $request){
         
-        //get all posts
+        
         $query = UserLogIn::all();
         return $query;//Always return an Array type
     }
@@ -30,11 +41,18 @@ class UserLogInController{
     public function createUser(WP_REST_Request $request){
 
         $body = json_decode($request->get_body());
-        
+        //returns a user id
         $id = UserLogIn::create([
-            'post_title'    => $body->title,
+            'post_title' => $body->post_title
             ]);
-            return $id;
+        //update custom fields    
+        update_field('name', $body->name, $id);
+        update_field('last_name', $body->last_name, $id);
+        update_field('email', $body->email, $id);
+        update_field('password', $body->password, $id);
+        return $id;
+        //var_dump($body);
+        //return json_encode("true");
     }
 
     
@@ -56,15 +74,18 @@ class UserLogInController{
         foreach($query->posts as $user){
             $users[] = array(
                 "ID" => $user->ID,
-                "post_title" => $user->name,
+                // "title" => $user->title,
                 "name" => $user->name,
                 "last_name" => $user->last_name,
                 "email" => $user->email,
                 "password" => $user->password,
                 
             );
+        $data = Array(
+            "users" => $users
+        );
         }
-        return $users;
+        return $data;
     }
 }
 ?>
