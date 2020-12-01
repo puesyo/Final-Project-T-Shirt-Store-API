@@ -1,7 +1,7 @@
 <?php
 namespace Rigo\Controller;
 
-use Rigo\Types\Course;
+// use Rigo\Types\Course;
 use Rigo\Types\UserLogIn;
 use \WP_REST_Request;
 

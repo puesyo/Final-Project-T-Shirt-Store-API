@@ -4,40 +4,38 @@ namespace Rigo\Controller;
 use Rigo\Types\Product;
 use \WP_REST_Request;
 
-class UserLogInController{
+class ProductController{  
     
-    
-    
-    public function getSingleUser(WP_REST_Request $request){
+    public function getSingleProduct(WP_REST_Request $request){
         $id = (string) $request['id'];
         return Product::get($id);
     }
     
-    public function getAllUsers(WP_REST_Request $request){
+    // public function getAllProducts(WP_REST_Request $request){
         
-        //get all posts
-        $query = Product::all();
-        return $query;//Always return an Array type
-    }
-    
-    // public function getCoursesByType(WP_REST_Request $request){
-        
-    //     $query = UserLogIn::all([ 'status' => 'draft' ]);
-    //     return $query->posts;
+    //     //get all posts
+    //     $query = Product::all();
+    //     return $query;//Always return an Array type
     // }
-    
-    public function createUser(WP_REST_Request $request){
+      
+    public function createProduct(WP_REST_Request $request){
 
         $body = json_decode($request->get_body());
-        
+        //returns a user id
         $id = Product::create([
-            'post_title'    => $body->title,
+            'post_title' => $body->post_title
             ]);
-            return $id;
+        //update custom fields    
+        update_field('name', $body->name, $id);
+        update_field('price', $body->price, $id);
+        update_field('picture', $body->picture, $id);
+        update_field('short_description', $body->short_description, $id);
+        update_field('long_description', $body->long_description, $id);
+        return $id;
     }
 
     
-    public function deleteUser(WP_REST_Request $request){
+    public function deleteProduct(WP_REST_Request $request){
         $id = (string) $request['id'];
         // result is true on success, false on failure
         $result = Product::delete($id);
@@ -48,22 +46,25 @@ class UserLogInController{
     /**
      * Using Custom Post types to add new properties to the course
      */
-    public function getUserWithCustomFields(WP_REST_Request $request){
+    public function getProductWithCustomFields(WP_REST_Request $request){
         
         $users = [];
         $query = Product::all();
-        foreach($query->posts as $user){
-            $users[] = array(
-                "ID" => $user->ID,
-                "post_title" => $user->name,
-                "name" => $user->name,
-                "last_name" => $user->last_name,
-                "email" => $user->email,
-                "password" => $user->password,
-                
+        foreach($query->posts as $product){
+            $products[] = array(
+                "ID" => $product->ID,
+                // "post_title" => $product->name,
+                "name" => $product->name,
+                "price" => $product->price,
+                "picture" => $product->picture,
+                "short_description" => $product->short_description,
+                "long_description" => $product->long_description                
             );
-        }
-        return $users;
+        $data = Array(
+            "products" => $products
+        );
+        }   
+        return $data;
     }
 }
 ?>
